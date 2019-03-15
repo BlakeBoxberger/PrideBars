@@ -1,7 +1,7 @@
 Package: com.blakeboxberger.pridebars
 Name: PrideBars
 Depends: mobilesubstrate
-Version: 1.0.1
+Version: 1.0.2
 Architecture: iphoneos-arm
 Description: Show pride in your carrier signal bars!
 Maintainer: Blake Boxberger
