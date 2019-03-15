@@ -1,3 +1,6 @@
+#define kOriginalBarCount 4
+#define kNewBarCount 6
+
 @interface _UIStatusBarSignalView : UIView
 @property (nonatomic, assign) NSInteger pridebars_maxBarStrength;
 @property (assign,nonatomic) NSInteger numberOfBars;
@@ -10,21 +13,16 @@
 // Set the color by modifying the sublayer's backgroundColor
 @end
 
-@interface _UIStatusBarWifiSignalView : _UIStatusBarSignalView
-// Sublayers are CAShapeLayers
-// Set the color by modifying the sublayer's strokeColor and fillColor
-@end
-
 %hook _UIStatusBarCellularSignalView
 %property (nonatomic, assign) NSInteger pridebars_maxBarStrength;
 
-- (void)setNumberOfBars:(NSInteger)arg1 {
-	self.pridebars_maxBarStrength = arg1;
+- (void)setNumberOfBars:(NSInteger)orig {
+	self.pridebars_maxBarStrength = orig;
 	%orig(6);
 }
 
-- (void)setNumberOfActiveBars:(NSInteger)arg1 {
-	CGFloat strength = arg1/self.pridebars_maxBarStrength;
+- (void)setNumberOfActiveBars:(NSInteger)orig {
+	CGFloat strength = orig / self.pridebars_maxBarStrength;
 	NSInteger newNumberOfActiveBars = floor(strength * self.numberOfBars);
 	%orig(newNumberOfActiveBars);
 }
@@ -38,23 +36,14 @@
 	[self pridebars_setPrideColors];
 }
 
-- (CGFloat)_heightForBarAtIndex:(NSInteger)arg1 {
-	if(arg1 == 5) {
-		CGFloat heightFor5bars = %orig(4);
-		if(heightFor5bars == 3.0) {
-			return 3.0;
-		}
-		else {
-			return heightFor5bars + 3.0;
-		}
-	}
-	else {
-		return %orig;
-	}
+- (CGFloat)_heightForBarAtIndex:(NSInteger)index mode:(NSInteger)mode {
+	if (mode < 0x2) return %orig; /* if not showing at normal height (e.g. no service) */
+	CGFloat fullHeight = %orig(self.pridebars_maxBarStrength, mode);
+	return fullHeight / kNewBarCount * (index + 1);
 }
 
-
-%new - (void)pridebars_setPrideColors {
+%new
+- (void)pridebars_setPrideColors {
 	NSArray *sublayers = self.layer.sublayers;
 
 	CALayer *bar1 = (CALayer *)sublayers[0];
@@ -80,6 +69,14 @@
 				bar6.backgroundColor = [UIColor.purpleColor CGColor];
 		}
 	}
+}
+
+-(CGFloat)_barWidth {
+	return %orig / kNewBarCount * self.pridebars_maxBarStrength;
+}
+
++ (CGFloat)_barWidthForIconSize:(NSInteger)iconSize {
+	return %orig / kNewBarCount * kOriginalBarCount;
 }
 
 %end
