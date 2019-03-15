@@ -3,12 +3,13 @@
 
 TARGET = iphone:11.2
 ARCHS = arm64
-PACKAGE_VERSION = 1.0.1
+PACKAGE_VERSION = 1.0.2
 
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = PrideBars
-PrideBars_FILES = Tweak.xm
+$(TWEAK_NAME)_FILES = Tweak.xm
+$(TWEAK_NAME)_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 

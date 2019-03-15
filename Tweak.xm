@@ -1,6 +1,6 @@
 #define kOriginalBarCount 4
 
-static const NSArray<UIColor *> *colours = @[[UIColor redColor], [UIColor orangeColor], [UIColor yellowColor], [UIColor greenColor], [UIColor blueColor], [UIColor purpleColor]];
+static NSArray<UIColor *> *colours;
 
 @interface _UIStatusBarSignalView : UIView
 @property (nonatomic, assign) NSInteger pridebars_maxBarStrength;
@@ -23,7 +23,7 @@ static const NSArray<UIColor *> *colours = @[[UIColor redColor], [UIColor orange
 }
 
 - (void)setNumberOfActiveBars:(NSInteger)orig {
-	NSInteger newNumberOfActiveBars = (NSInteger)ceil((CGFloat)orig / kOriginalBarCount * (CGFloat)colours.count);
+	NSInteger newNumberOfActiveBars = (NSInteger)ceil((CGFloat)orig / self.pridebars_maxBarStrength * (CGFloat)colours.count);
 	%orig(newNumberOfActiveBars);
 }
 
@@ -73,5 +73,6 @@ static const NSArray<UIColor *> *colours = @[[UIColor redColor], [UIColor orange
 %ctor {
 	// Fix rejailbreak bug
 	if (![NSBundle.mainBundle.bundleURL.lastPathComponent.pathExtension isEqualToString:@"app"]) return;
+	colours = @[[UIColor redColor], [UIColor orangeColor], [UIColor yellowColor], [UIColor greenColor], [UIColor blueColor], [UIColor purpleColor]];
 	%init;
 }
